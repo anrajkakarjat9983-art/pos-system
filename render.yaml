@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: pos-system
+    runtime: node
+    plan: free
+    region: singapore
+    branch: master
+    buildCommand: cd server && npm install && npx prisma generate && npm run build && cd ../client && npm install && npm run build
+    startCommand: cd server && npx prisma db push --skip-generate && node scripts/bootstrap.mjs && node dist/index.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        value: "file:./dev.db"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        value: ".onrender.com"
+      - key: NPM_CONFIG_FUND
+        value: "false"
+      - key: NPM_CONFIG_AUDIT
+        value: "false"
